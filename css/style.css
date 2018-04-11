@@ -88,6 +88,9 @@ h1 {
     animation-duration: .75s;
     background: #e2043b;
 }
+.deck .card.notActive {
+    pointer-events: none;
+}
 
 /*
  * Styles for the Score Panel

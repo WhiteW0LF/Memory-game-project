@@ -18,7 +18,8 @@ let closeIcon = document.querySelector(".close");
 let modalWindow = document.querySelector("#game_end");
 
 
-//SHUFFLE CARDS
+//@description SHUFFLE CARDS
+//param {array} - array of cards
 function shuffle(array) {
     let currentIndex = array.length, temporaryValue, randomIndex;
 
@@ -33,7 +34,8 @@ function shuffle(array) {
     return array;
 };
 
-//START GAME
+//@description WHEN PAGE ONLOAD or reload, it shuffle cards, reset time, clear moves and stars
+
 document.body.onload = startGame();
 function startGame(){
     // shuffle deck
@@ -44,7 +46,7 @@ function startGame(){
         [].forEach.call(cards, function(item) {
             deck.appendChild(item);
         });
-        cards[i].classList.remove("show", "open", "identical", "nonidentical");
+        cards[i].classList.remove("show", "open", "identical", "nonidentical", "notActive");
     }
     // restart moves
     moves = 0;
@@ -65,16 +67,17 @@ function startGame(){
 //SHOW OR OPEN CARD
 for (let i = 0; i < cards.length; i++){
     card = cards[i];
-    card.addEventListener("click", clickCard);
+    card.addEventListener("click", showCard);
     card.addEventListener("click", cardOpen);
     card.addEventListener("click",gameEnd);
 };
 
 
-// CLICK CARD
-function clickCard (){
+// ADD OR REMOVE CLASSES
+function showCard (){
     this.classList.toggle("open");
     this.classList.toggle("show");
+    this.classList.toggle("notActive");
 };
 
 // WHEN 2 CARD ARE IDENTICAL OR NOT IDENTICAL
@@ -92,8 +95,8 @@ function cardOpen() {
 };
 
 function identical(){
-    openCards[0].classList.add("identical");
-    openCards[1].classList.add("identical");
+    openCards[0].classList.add("identical", "notActive");
+    openCards[1].classList.add("identical", "notActive");
     openCards[0].classList.remove("show", "open");
     openCards[1].classList.remove("show", "open");
     openCards = [];
@@ -102,11 +105,27 @@ function identical(){
 function nonidentical(){
     openCards[0].classList.add("nonidentical");
     openCards[1].classList.add("nonidentical");
+    notActive();
     setTimeout(function(){
         openCards[0].classList.remove("show", "open", "nonidentical");
         openCards[1].classList.remove("show", "open", "nonidentical");
+        active();
         openCards = [];
     },1100);
+}
+//@description When we click twise on the same card
+function notActive(){
+    Array.prototype.filter.call(cards, function(card){
+        card.classList.add('notActive');
+    });
+}
+function active(){
+    Array.prototype.filter.call(cards, function(card){
+        card.classList.remove('notActive');
+        for(let i = 0; i < allCardsIdent.length; i++){
+            allCardsIdent[i].classList.add("notActive");
+        }
+    });
 }
 
 //ADD MOVES
@@ -175,14 +194,14 @@ function gameEnd(){
         closeModal();
     };
 }
-
+//CLOSE GAME END WINDOW
 function closeModal(){
     closeIcon.addEventListener("click", function(e){
         modalWindow.classList.remove("show");
         startGame();
     });
 }
-
+//
 function playAgain(){
     modalWindow.classList.remove("show");
     startGame();
